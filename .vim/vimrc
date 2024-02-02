@@ -1,0 +1,180 @@
+call plug#begin('~/.vim/plugged')
+Plug 'preservim/nerdtree', { 'on' : 'NERDTreeToggle' }
+Plug 'xuyuanp/nerdtree-git-plugin'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'Chiel92/vim-autoformat'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'sheerun/vim-polyglot'
+Plug 'preservim/nerdcommenter'
+Plug 'neovimhaskell/haskell-vim'
+Plug 'dense-analysis/ale'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'makerj/vim-pdf'
+
+Plug 'kristian3551/cppsnippets'
+Plug 'killercho/oceanic-next'
+Plug 'killercho/ivan-space-ninja'
+call plug#end()
+
+packadd! matchit
+
+filetype plugin indent on
+syntax on
+
+set encoding=utf-8
+
+set statusline+=%#warningmsg#
+set statusline+=%*
+
+set tabstop=4
+set shiftwidth=4
+set expandtab
+
+set t_Co=256
+set termguicolors
+set background=dark
+
+colorscheme OceanicNext
+
+" Airline theme
+let g:airline_theme='deus'
+
+set ttimeout
+set ttimeoutlen=50
+
+set wildmenu
+set wildmode=list:longest,full
+
+"create the undofile dir if it's not there
+if !isdirectory($HOME."/.vim/undo-dir")
+    call mkdir($HOME."/.vim/undo-dir", "", 0700)
+endif
+set undodir=~/.vim/undo-dir
+set undofile
+
+set ttymouse=sgr
+set mouse=a
+
+set splitbelow
+set splitright
+
+"folds a function, default bind is z->a
+set foldmethod=indent
+set foldlevel=99
+
+set number relativenumber
+
+set incsearch
+
+"airline settings
+"let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+let g:airline#extensions#tabline#show_buffers = 0
+let g:airline#extensions#tabline#show_splits = 0
+let g:airline#extensions#tabline#fnamemod = ':t'
+
+"ale settings
+let g:ale_fix_on_save = 1
+
+"haskell settings for haskell-vim
+let g:haskell_enable_quantification = 1   " to enable highlighting of `forall`
+let g:haskell_enable_recursivedo = 1      " to enable highlighting of `mdo` and `rec`
+let g:haskell_enable_arrowsyntax = 1      " to enable highlighting of `proc`
+let g:haskell_enable_pattern_synonyms = 1 " to enable highlighting of `pattern`
+let g:haskell_enable_typeroles = 1        " to enable highlighting of type roles
+let g:haskell_enable_static_pointers = 1  " to enable highlighting of `static`
+let g:haskell_backpack = 1                " to enable highlighting of backpack keywords
+let g:haskell_indent_before_where = 1     " indent before a where clause
+let g:haskell_indent_guard = 1            " indent before a guard clause (|)
+
+"Movement binds
+nnoremap j gj
+nnoremap k gk
+xnoremap j gj
+xnoremap k gk
+
+nnoremap J 5j
+nnoremap K 5k
+xnoremap J 5j
+xnoremap K 5k
+
+"Yanks from cursor to the end of the line
+nnoremap Y y$
+
+"Yank in '+' register
+vnoremap <C-y> "+y
+
+"Copy and paste text under or over the cursor
+nnoremap zj mayyp`aj
+nnoremap zk mayyP`ak
+
+"Paste in different modes
+inoremap <C-p> <Esc>pa
+cnoremap <C-p> <C-r>"
+nnoremap <C-p> "+p
+
+"NERDTree bindings
+nnoremap <C-f> :NERDTreeFocus<CR>
+nnoremap <C-t> :NERDTreeToggle<CR>
+
+"Save/Exit bindings
+nnoremap <C-w> :w<CR>
+nnoremap <C-q> :q<CR>
+
+"Tab bindings
+nnoremap <C-l> gt<CR>
+nnoremap <C-h> gT<CR>
+nnoremap <C-n> :tabnew<CR>
+
+"Moving text around bindings
+nnoremap <C-j> :m +1<CR>
+nnoremap <C-k> :m -2<CR>
+
+"Comenter binds
+nnoremap <C-c> :call nerdcommenter#Comment(0, 'toggle')<CR>
+xnoremap <C-c> :call nerdcommenter#Comment(0, 'toggle')<CR>
+
+"Arrows moving splitted windows
+nnoremap <up> <c-w>k
+nnoremap <down> <c-w>j
+nnoremap <right> <c-w>l
+nnoremap <left> <c-w>h
+
+"Arrows with <C> to resize splits
+nnoremap <c-up> 5<c-w>+
+nnoremap <c-down> 5<c-w>-
+nnoremap <c-left> 5<c-w><
+nnoremap <c-right> 5<c-w>>
+
+"Filetype options
+let g:filetype_pl="prolog"
+
+"CtrlP settings
+"Press <c-d> to switch to filename only search instead of full path.
+"Use <c-t> or <c-v>, <c-x> to open the selected entry in a new tab or in a new split.
+"Use <c-j>, <c-k> or the arrow keys to navigate the result list.
+let g:ctrlp_map = '<C-o>'
+
+"Coc binds
+nnoremap <C-c> :call nerdcommenter#Comment(0, 'toggle')<CR>
+nnoremap <silent> gd <Plug>(coc-definition)
+nnoremap <silent> gy <Plug>(coc-type-definition)
+nnoremap <silent> gi <Plug>(coc-implementation)
+nnoremap <silent> gr <Plug>(coc-reference)
+nnoremap <silent> <C-d> :call cocconf#ShowDocumentation()<CR>
+
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+            \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+augroup vimStartup
+    au!
+    autocmd BufReadPost *
+                \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+                \ |   exe "normal! g`\""
+                \ | endif
+augroup END
+
+au BufWrite * if &ft != "text" && &ft != "markdown" | :Autoformat
+
+autocmd BufEnter * if &filetype == "" | setf text | endif
